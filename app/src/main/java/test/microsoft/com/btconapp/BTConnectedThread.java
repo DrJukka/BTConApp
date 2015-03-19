@@ -35,8 +35,10 @@ public class BTConnectedThread extends Thread {
         OutputStream tmpOut = null;
         // Get the BluetoothSocket input and output streams
         try {
-            tmpIn = socket.getInputStream();
-            tmpOut = socket.getOutputStream();
+            if(mmSocket != null) {
+                tmpIn = mmSocket.getInputStream();
+                tmpOut = mmSocket.getOutputStream();
+            }
         } catch (IOException e) {
             Log.e(TAG, "Creating temp sockets failed: ", e);
         }
@@ -50,9 +52,11 @@ public class BTConnectedThread extends Thread {
 
         while (true) {
             try {
-                bytes = mmInStream.read(buffer);
-                Log.d(TAG, "ConnectedThread read data: " + bytes + " bytes");
-                mHandler.obtainMessage(MESSAGE_READ, bytes, -1, buffer).sendToTarget();
+                if(mmInStream != null) {
+                    bytes = mmInStream.read(buffer);
+                    //Log.d(TAG, "ConnectedThread read data: " + bytes + " bytes");
+                    mHandler.obtainMessage(MESSAGE_READ, bytes, -1, buffer).sendToTarget();
+                }
             } catch (IOException e) {
                 Log.e(TAG, "ConnectedThread disconnected: ", e);
                 mHandler.obtainMessage(SOCKET_DISCONNEDTED, -1,-1 ,e ).sendToTarget();
@@ -66,15 +70,19 @@ public class BTConnectedThread extends Thread {
      */
     public void write(byte[] buffer) {
         try {
-            mmOutStream.write(buffer);
-            mHandler.obtainMessage(MESSAGE_WRITE, buffer.length, -1, buffer).sendToTarget();
+            if(mmOutStream != null) {
+                mmOutStream.write(buffer);
+                mHandler.obtainMessage(MESSAGE_WRITE, buffer.length, -1, buffer).sendToTarget();
+            }
         } catch (IOException e) {
             Log.e(TAG, "ConnectedThread  write failed: ", e);
         }
     }
     public void Stop() {
         try {
-            mmSocket.close();
+            if(mmSocket != null) {
+                mmSocket.close();
+            }
         } catch (IOException e) {
             Log.e(TAG, "ConnectedThread  socket close failed: ", e);
         }

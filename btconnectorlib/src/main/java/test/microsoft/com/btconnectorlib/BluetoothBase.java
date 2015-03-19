@@ -40,6 +40,8 @@ public class BluetoothBase {
     public BluetoothBase(Context Context, BluetoothStatusChanged handler) {
         this.context = Context;
         this.callBack = handler;
+
+        //bluetooth = new BluetoothAdapter(this);
         bluetooth = BluetoothAdapter.getDefaultAdapter();
     }
 
@@ -112,8 +114,10 @@ public class BluetoothBase {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
+
             if (BluetoothAdapter.ACTION_SCAN_MODE_CHANGED.equals(action)) {
                 int mode = intent.getIntExtra(BluetoothAdapter.EXTRA_SCAN_MODE, BluetoothAdapter.ERROR);
+
                 if (callBack != null) {
                     callBack.BluetoothStateChanged(mode);
                 }

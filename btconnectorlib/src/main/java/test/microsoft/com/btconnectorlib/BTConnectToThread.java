@@ -45,7 +45,7 @@ public class BTConnectToThread extends Thread {
     }
 
     private void printe_line(String message){
-        Log.d("BTConnectToThread",  "BTConnectToThread: " + message);
+     //   Log.d("BTConnectToThread",  "BTConnectToThread: " + message);
     }
 
     public void Stop() {

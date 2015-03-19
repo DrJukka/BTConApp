@@ -7,6 +7,7 @@ import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pManager;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.util.Log;
 
@@ -53,6 +54,14 @@ public class BTConnector implements BluetoothBase.BluetoothStatusChanged, WifiBa
     private Context context = null;
     private Handler mHandler = null;
 
+    CountDownTimer ServiceFoundTimeOutTimer = new CountDownTimer(600000, 1000) {
+        public void onTick(long millisUntilFinished) {
+            // not using
+        }
+        public void onFinish() {
+            startAll();
+        }
+    };
     public BTConnector(Context Context, Callback Callback){
         this.context = Context;
         this.callback = Callback;
@@ -172,6 +181,7 @@ public class BTConnector implements BluetoothBase.BluetoothStatusChanged, WifiBa
 
     private void stopAll() {
         print_line("", "Stoping All");
+        ServiceFoundTimeOutTimer.cancel();
         stopServices();
         stopBluetooth();
     }
@@ -285,6 +295,9 @@ public class BTConnector implements BluetoothBase.BluetoothStatusChanged, WifiBa
     @Override
     public void gotPeersList(Collection<WifiP2pDevice> list) {
 
+        ServiceFoundTimeOutTimer.cancel();
+        ServiceFoundTimeOutTimer.start();
+
         print_line("SS", "Found " + list.size() + " peers.");
         int numm = 0;
         for (WifiP2pDevice peer : list) {
@@ -297,18 +310,18 @@ public class BTConnector implements BluetoothBase.BluetoothStatusChanged, WifiBa
 
     @Override
     public void gotServicesList(List<ServiceItem> list) {
-        if(list != null & mWifiBase != null && list.size() > 0) {
+        if(mWifiBase != null && list != null && list.size() > 0) {
 
             ServiceItem selItem = mWifiBase.SelectServiceToConnect(list);
             if (selItem != null && mBluetoothBase != null) {
 
-                // stop searching when we are connecting
-                mWifiServiceSearcher.Stop();
-                mWifiServiceSearcher = null;
-
                 if (mBTConnectToThread != null) {
                     mBTConnectToThread.Stop();
                     mBTConnectToThread = null;
+                }
+
+                if(ServiceFoundTimeOutTimer != null) {
+                    ServiceFoundTimeOutTimer.cancel();
                 }
 
                 print_line("", "Selected device address: " + selItem.instanceName);
@@ -342,6 +355,7 @@ public class BTConnector implements BluetoothBase.BluetoothStatusChanged, WifiBa
     }
 
     public void print_line(String who, String line) {
-        Log.i("BTConnector" + who, line);
+
+        //Log.i("BTConnector" + who, line);
     }
 }

@@ -46,15 +46,13 @@ public class WifiBase implements WifiP2pManager.ChannelListener {
     public boolean Start(){
 
         boolean ret =false;
-        //just making sure that when we start we have the Wifi on,
-        // after this point we'll respect if it is turned off
-        WifiManager wifiManager = (WifiManager) this.context.getSystemService(Context.WIFI_SERVICE);
-        if(!wifiManager.isWifiEnabled()) {
-            wifiManager.setWifiEnabled(true);
-        }
+
+        mBRReceiver = new MainBCReceiver();
+        filter = new IntentFilter();
+        filter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
+        this.context.registerReceiver((mBRReceiver), filter);
 
         p2p = (WifiP2pManager) this.context.getSystemService(Context.WIFI_P2P_SERVICE);
-
         if (p2p == null) {
             Log.d("WifiBase", "This device does not support Wi-Fi Direct");
         } else {
@@ -62,15 +60,10 @@ public class WifiBase implements WifiP2pManager.ChannelListener {
             channel = p2p.initialize(this.context, this.context.getMainLooper(), this);
         }
 
-        mBRReceiver = new MainBCReceiver();
-        filter = new IntentFilter();
-        filter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
-        LocalBroadcastManager.getInstance(this.context).registerReceiver((mBRReceiver), filter);
-
         return ret;
     }
     public void Stop(){
-        LocalBroadcastManager.getInstance(this.context).unregisterReceiver(mBRReceiver);
+        this.context.unregisterReceiver(mBRReceiver);
     }
 
     public WifiP2pManager.Channel GetWifiChannel(){
@@ -167,7 +160,6 @@ public class WifiBase implements WifiP2pManager.ChannelListener {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-
             if (WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION.equals(action)) {
                 int state = intent.getIntExtra(WifiP2pManager.EXTRA_WIFI_STATE, -1);
                 if(callback != null) {

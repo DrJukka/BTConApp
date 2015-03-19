@@ -1,4 +1,3 @@
-// Copyright (c) Microsoft. All Rights Reserved. Licensed under the MIT License. See license.txt in the project root for further information.
 package test.microsoft.com.btconnectorlib;
 
 import android.content.BroadcastReceiver;
@@ -23,6 +22,7 @@ import static android.net.wifi.p2p.WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION;
 /**
  * Created by juksilve on 28.2.2015.
  */
+
 public class WifiServiceSearcher {
 
     private Context context;
@@ -49,10 +49,10 @@ public class WifiServiceSearcher {
         public void onTick(long millisUntilFinished) {
             // not using
         }
-    public void onFinish() {
-        stopDiscovery();
-        startPeerDiscovery();
-    }
+        public void onFinish() {
+            stopDiscovery();
+            startPeerDiscovery();
+        }
     };
 
     CountDownTimer peerDiscoveryTimer = null;
@@ -65,7 +65,9 @@ public class WifiServiceSearcher {
 
         Random ran = new Random(System.currentTimeMillis());
 
-        long millisInFuture = 4000 + (ran.nextInt(6000));
+        // if this 4 seconds minimum, then we see this
+        // triggering before we got all services
+        long millisInFuture = 5000 + (ran.nextInt(5000));
 
         debug_print("peerDiscoveryTimer timeout value:" + millisInFuture);
 
@@ -74,8 +76,8 @@ public class WifiServiceSearcher {
                 // not using
             }
             public void onFinish() {
-                ServiceDiscoveryTimeOutTimer.cancel();
-                if(callback != null && myServiceList.size() > 0) {
+                myServiceState = ServiceState.NONE;
+                if(callback != null) {
                     callback.gotServicesList(myServiceList);
                 }else{
                     startPeerDiscovery();
@@ -117,8 +119,6 @@ public class WifiServiceSearcher {
                         startServiceDiscovery();
                     }
                 }
-
-
             }
         };
 
@@ -139,10 +139,11 @@ public class WifiServiceSearcher {
                         myServiceList.add(new ServiceItem(instanceName, serviceType, device.deviceAddress,device.deviceName));
                     }
 
-
                 } else {
                     debug_print("Not our Service, :" + WifiBase.SERVICE_TYPE + "!=" + serviceType + ":");
                 }
+
+                ServiceDiscoveryTimeOutTimer.cancel();
 
                 peerDiscoveryTimer.cancel();
                 peerDiscoveryTimer.start();
@@ -151,7 +152,6 @@ public class WifiServiceSearcher {
 
         p2p.setDnsSdResponseListeners(channel, serviceListener, null);
         startPeerDiscovery();
-
     }
 
     public void Stop() {
@@ -169,6 +169,7 @@ public class WifiServiceSearcher {
                 debug_print("Started peer discovery");
             }
             public void onFailure(int reason) {
+                myServiceState = ServiceState.NONE;
                 debug_print("Starting peer discovery failed, error code " + reason);
                 //lets try again after 1 minute time-out !
                 ServiceDiscoveryTimeOutTimer.start();
@@ -212,6 +213,8 @@ public class WifiServiceSearcher {
                                 stopDiscovery();
                                 myServiceState = ServiceState.NONE;
                                 debug_print("Starting service discovery failed, error code " + reason);
+                                //lets try again after 1 minute time-out !
+                                ServiceDiscoveryTimeOutTimer.start();
                             }
                         });
                     }
@@ -221,7 +224,8 @@ public class WifiServiceSearcher {
             public void onFailure(int reason) {
                 myServiceState = ServiceState.NONE;
                 debug_print("Adding service request failed, error code " + reason);
-                // No point starting service discovery
+                //lets try again after 1 minute time-out !
+                ServiceDiscoveryTimeOutTimer.start();
             }
         });
 

@@ -36,7 +36,9 @@ public class BTListenerThread extends Thread {
             printe_line("starting to listen");
             BluetoothSocket socket = null;
             try {
-                socket = mSocket.accept();
+                if(mSocket != null){
+                    socket = mSocket.accept();
+                }
                 if(socket != null){
                     printe_line("we got incoming connection");
                     callback.GotConnection(socket);
@@ -62,7 +64,9 @@ public class BTListenerThread extends Thread {
         printe_line("cancelled");
         mStopped = true;
         try {
-            mSocket.close();
+            if(mSocket != null) {
+                mSocket.close();
+            }
         } catch (IOException e) {
             printe_line("closing socket failed: " + e.toString());
         }

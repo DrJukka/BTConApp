@@ -61,19 +61,27 @@ public class MainActivity extends ActionBarActivity implements BTConnector.Callb
     BTConnectedThread mBTConnectedThread = null;
     PowerManager.WakeLock mWakeLock = null;
 
-    CountDownTimer BigBufferReceivingTimeOut = new CountDownTimer(60000, 1000) {
+    long receivingTimeOutBaseTime = 0;
+    CountDownTimer BigBufferReceivingTimeOut = new CountDownTimer(2000, 500) {
         public void onTick(long millisUntilFinished) {
             // not using
         }
         public void onFinish() {
-            if (mBTConnectedThread != null) {
-                mBTConnectedThread.Stop();
-                mBTConnectedThread = null;
-            }
-            print_line("CHAT", "WE got timeout on receiving data, lets Disconnect.");
 
-            ConCancelCounter = ConCancelCounter+ 1;
-            ((TextView) findViewById(R.id.cancelCount)).setText("" + ConCancelCounter);
+            //if the receiving process has taken more than a minute, lets cancel it
+            long receivingNow = (System.currentTimeMillis() - receivingTimeOutBaseTime);
+            if(receivingNow > 60000) {
+                if (mBTConnectedThread != null) {
+                    mBTConnectedThread.Stop();
+                    mBTConnectedThread = null;
+                }
+                print_line("CHAT", "WE got timeout on receiving data, lets Disconnect.");
+
+                ConCancelCounter = ConCancelCounter + 1;
+                ((TextView) findViewById(R.id.cancelCount)).setText("" + ConCancelCounter);
+            }else{
+                BigBufferReceivingTimeOut.start();
+            }
         }
     };
 
@@ -249,6 +257,7 @@ public class MainActivity extends ActionBarActivity implements BTConnector.Callb
                         if (mTestDataFile != null) {
                             mTestDataFile.SetTimeNow(TestDataFile.TimeForState.GotData);
                         }
+                        receivingTimeOutBaseTime = System.currentTimeMillis();
                         gotFirstMessage = true;
                         gotDataAmount = 0;
                         print_line("CHAT", "Got message: " + readMessage);
