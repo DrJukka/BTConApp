@@ -5,7 +5,7 @@ android {
     buildToolsVersion "21.1.2"
 
     defaultConfig {
-        applicationId "test.microsoft.com.btconapp"
+        applicationId "org.thaliproject.p2p.btconapp"
         minSdkVersion 16
         targetSdkVersion 21
         versionCode 1

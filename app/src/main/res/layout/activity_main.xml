@@ -35,20 +35,6 @@
                 android:layout_weight="1.0"/>
         </LinearLayout>
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:weightSum="1"
-        android:layout_marginBottom="10dp">
-        <TextView
-                android:id="@+id/statusBox"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1.0"/>
-    </LinearLayout>
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="fill_parent"
@@ -57,32 +43,46 @@
             android:layout_alignParentEnd="true"
             android:weightSum="1"
             android:layout_marginBottom="10dp">
-        <TextView
-            android:id="@+id/remoteHost"
+            <TextView
+                android:id="@+id/statusBox"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.0"/>
+        </LinearLayout>
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1.0"/>
-    </LinearLayout>
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:weightSum="1"
-        android:layout_marginBottom="10dp">
-        <TextView
-            android:id="@+id/CountBoxtitle"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:weightSum="1"
+            android:layout_marginBottom="10dp">
+            <TextView
+                android:id="@+id/remoteHost"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.0"/>
+        </LinearLayout>
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1.0"
-            android:text="Bytes: "/>
-        <TextView
-            android:id="@+id/CountBox"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:layout_weight="1.0"/>
-    </LinearLayout>
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:weightSum="1"
+            android:layout_marginBottom="10dp">
+            <TextView
+                android:id="@+id/CountBoxtitle"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.0"
+                android:text="Bytes: "/>
+            <TextView
+                android:id="@+id/CountBox"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:layout_weight="1.0"/>
+        </LinearLayout>
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="fill_parent"
